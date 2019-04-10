@@ -1,13 +1,10 @@
-﻿using System;
-
-namespace HttpLoggingProxy
+﻿namespace HttpLoggingProxy
 {
     using System.Collections.Generic;
     using System.IO;
     using Microsoft.Extensions.Configuration;
     using Symbotic.Framework.Chassis.Abstractions;
     using Symbotic.Framework.Logging;
-    using System.Linq;
 
     public class Application:IApplication
     {
@@ -37,7 +34,6 @@ namespace HttpLoggingProxy
                         int.Parse(service.GetValue<string>("toPort")), 
                         _logger));
                 }
-                
             }
         }
 

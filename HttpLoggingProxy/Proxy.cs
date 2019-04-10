@@ -1,13 +1,11 @@
-﻿using Symbotic.Framework.Logging;
-
-namespace HttpLoggingProxy
+﻿namespace HttpLoggingProxy
 {
     using System;
     using System.Net;
     using System.Net.Sockets;
     using System.Text;
     using System.Threading;
-    using System.Linq;
+    using Symbotic.Framework.Logging;
 
     public class Proxy : IDisposable
     {
@@ -43,39 +41,16 @@ namespace HttpLoggingProxy
                 try
                 {
                     var requestClient = _listener.AcceptTcpClient();
-                    var requestStream = requestClient.GetStream();
-                    var message = ReadStreamToEnd(requestStream);
-                    _logger.LogInformation(
-                        $"Received on {requestClient.Client.LocalEndPoint}:\n" +
-                        Encoding.ASCII.GetString(message, 0, message.Length));
+                    var requestStream = ReadRequest(requestClient, out var message);
                     TcpClient destinationClient = null;
                     try
                     {
                         destinationClient = new TcpClient(_host, _destinationPort);
-                        var destinationStream = destinationClient.GetStream();
-
-                        destinationStream.Write(message, 0, message.Length);
-
-                        var responseMessage = ReadStreamToEnd(destinationStream);
-
-                        _logger.LogInformation(
-                           $"Response on port {_destinationPort}:\n" +
-                            Encoding.ASCII.GetString(responseMessage, 0, responseMessage.Length));
-
-                        requestStream.Write(responseMessage, 0, responseMessage.Length);
+                        RedirectAndRespond(destinationClient, message, requestStream);
                     }
                     catch (SocketException x)
                     {
-                        var exceptionMessage = "HTTP/1.1 500" + Environment.NewLine +
-                        $"Date: {DateTime.Now:ddd, dd MMM yyy HH:mm:ss GMT}" + Environment.NewLine +
-                        "Content - Type: text / plain; charset = UTF - 8" + Environment.NewLine +
-                        $"Content - Length: {x.Message}" + Environment.NewLine + Environment.NewLine + x;
-
-                        var response = Encoding.ASCII.GetBytes(exceptionMessage);
-                        requestStream.Write(response, 0, response.Length);
-
-                        _logger.LogInformation(
-                            $"Response on port {_destinationPort}:\n{x}");
+                        HandleRemoteException(x, requestStream);
                     }
                     finally
                     {
@@ -89,29 +64,67 @@ namespace HttpLoggingProxy
                     _logger.LogError(e.Message);
                 }
             }
-            // ReSharper disable once FunctionNeverReturns
+        }
+
+        private void RedirectAndRespond(TcpClient destinationClient, byte[] message, NetworkStream requestStream)
+        {
+            var destinationStream = destinationClient.GetStream();
+
+            destinationStream.Write(message, 0, message.Length);
+
+            var responseMessage = ReadStreamToEnd(destinationStream);
+
+            _logger.LogInformation(
+                $"Response on port {_destinationPort}:\n" +
+                Encoding.ASCII.GetString(responseMessage, 0, responseMessage.Length));
+
+            requestStream.Write(responseMessage, 0, responseMessage.Length);
+        }
+
+        private NetworkStream ReadRequest(TcpClient requestClient, out byte[] message)
+        {
+            var requestStream = requestClient.GetStream();
+            message = ReadStreamToEnd(requestStream);
+            _logger.LogInformation(
+                $"Received on {requestClient.Client.LocalEndPoint}:\n" +
+                Encoding.ASCII.GetString(message, 0, message.Length));
+            return requestStream;
+        }
+
+        private void HandleRemoteException(SocketException x, NetworkStream requestStream)
+        {
+            var exceptionMessage = "HTTP/1.1 500" + Environment.NewLine +
+                                   $"Date: {DateTime.Now:ddd, dd MMM yyy HH:mm:ss GMT}" + Environment.NewLine +
+                                   "Content - Type: text / plain; charset = UTF - 8" + Environment.NewLine +
+                                   $"Content - Length: {x.Message}" + Environment.NewLine + Environment.NewLine + x;
+
+            var response = Encoding.ASCII.GetBytes(exceptionMessage);
+            requestStream.Write(response, 0, response.Length);
+
+            _logger.LogInformation(
+                $"Response on port {_destinationPort}:\n{x}");
         }
 
         private byte[] ReadStreamToEnd(NetworkStream stream)
         {
-                var myReadBuffer = new byte[1024];
-                var sb = new StringBuilder();
-                int numberOfBytesRead;
+            var myReadBuffer = new byte[1024];
+            var sb = new StringBuilder();
+            int numberOfBytesRead;
 
-                while (!stream.DataAvailable)
-                {
-                    //Stabilizer
-                    Thread.Sleep(10);
-                }
+            while (!stream.DataAvailable)
+            {
+                //Stabilizer
+                Thread.Sleep(10);
+            }
 
-                while (stream.DataAvailable &&
-                       (numberOfBytesRead = stream.Read(myReadBuffer, 0, myReadBuffer.Length)) > 0)
-                {
-                    sb.Append(Encoding.ASCII.GetString(myReadBuffer, 0, numberOfBytesRead));
-                }
+            while (stream.DataAvailable &&
+                   (numberOfBytesRead = stream.Read(myReadBuffer, 0, myReadBuffer.Length)) > 0)
+            {
+                sb.Append(Encoding.ASCII.GetString(myReadBuffer, 0, numberOfBytesRead));
+            }
 
-                return Encoding.ASCII.GetBytes(sb.ToString());
-           
+            return Encoding.ASCII.GetBytes(sb.ToString());
+
         }
 
 
