@@ -7,6 +7,7 @@ namespace HttpLoggingProxy
     using System.Net.Sockets;
     using System.Text;
     using System.Threading;
+    using System.Linq;
 
     public class Proxy : IDisposable
     {
@@ -15,13 +16,16 @@ namespace HttpLoggingProxy
         private readonly int _fromPort;
         private readonly ILogger _logger;
         private readonly object _lock = new object();
+        private readonly string _host;
 
-        public Proxy(int fromPort, int toPort, ILogger logger)
+        public Proxy(string host, int fromPort, int toPort, ILogger logger)
         {
+            _host = host;
             _logger = logger;
             _destinationPort = toPort;
             _fromPort = fromPort;
             _listener = new TcpListener(IPAddress.Any, fromPort);
+
             new Thread(Start)
             {
                 IsBackground = false,
@@ -47,7 +51,7 @@ namespace HttpLoggingProxy
                     TcpClient destinationClient = null;
                     try
                     {
-                        destinationClient = new TcpClient("localhost", _destinationPort);
+                        destinationClient = new TcpClient(_host, _destinationPort);
                         var destinationStream = destinationClient.GetStream();
 
                         destinationStream.Write(message, 0, message.Length);

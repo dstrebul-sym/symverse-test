@@ -1,10 +1,13 @@
-﻿namespace HttpLoggingProxy
+﻿using System;
+
+namespace HttpLoggingProxy
 {
     using System.Collections.Generic;
     using System.IO;
     using Microsoft.Extensions.Configuration;
     using Symbotic.Framework.Chassis.Abstractions;
     using Symbotic.Framework.Logging;
+    using System.Linq;
 
     public class Application:IApplication
     {
@@ -25,9 +28,16 @@
         }
         public void Start()
         {
-            foreach (var arg in _configuration.GetSection("Routings").GetChildren())
+            foreach (var routing in _configuration.GetSection("Routings").GetChildren())
             {
-                _services.Add(new Proxy(int.Parse(arg.Key), int.Parse(arg.Value), _logger));
+                foreach (var service in routing.GetSection("mappings").GetChildren())
+                {
+                    _services.Add(new Proxy(routing.Key,
+                        int.Parse(service.GetValue<string>("fromPort")),
+                        int.Parse(service.GetValue<string>("toPort")), 
+                        _logger));
+                }
+                
             }
         }
 

@@ -1,6 +1,9 @@
 ﻿
 
 
+using Microsoft.Extensions.Options;
+using Symbotic.Framework.Logging;
+
 namespace HttpLoggingProxy
 {
     using Microsoft.Extensions.Configuration;
@@ -20,6 +23,10 @@ namespace HttpLoggingProxy
                 .Build();
 
             host.Run();
+
+            //var a = new Application(new LoggerFactory(new OptionsWrapper<LoggingOptions>(LoggingOptions.Default))
+            //    .Create<Application>());
+            //a.Start();
         }
     }
 

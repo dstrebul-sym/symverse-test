@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: http-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: http-proxy
+  template:
+    metadata:
+      labels:
+        app: http-proxy
+    spec:
+      containers:
+      - name: http-proxy
+        image: localhost:5000/http-proxy:beta-latest
+        ports:
+        - containerPort: 9999
+        
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: http-proxy
+  labels:
+    app: http-proxy
+spec:
+  ports:
+  - name: redirector-1
+    port: 9999
+  selector:
+    app: http-proxy
+  type: LoadBalancer
+
