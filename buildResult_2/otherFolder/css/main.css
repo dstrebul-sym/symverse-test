@@ -1,0 +1,240 @@
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url(../fonts/MaterialIcons-Regular.eot); /* For IE6-8 */
+  src: local('Material Icons'),
+      local('MaterialIcons-Regular'),
+      url(../fonts/MaterialIcons-Regular.woff2) format('woff2'),
+      url(../fonts/MaterialIcons-Regular.woff) format('woff'),
+      url(../fonts/MaterialIcons-Regular.ttf) format('truetype');
+}
+
+.material-icons, material-icon {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;  /* Preferred icon size */
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+
+  /* Support for all WebKit browsers. */
+  -webkit-font-smoothing: antialiased;
+  /* Support for Safari and Chrome. */
+  text-rendering: optimizeLegibility;
+
+  /* Support for Firefox. */
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Support for IE. */
+  font-feature-settings: 'liga';
+}
+
+.small-icon {
+  font-size: 12px;
+}
+
+html {
+  overflow: hidden;
+}
+
+body {
+  font-family: Roboto,"Helvetica Neue",Arial,Helvetica,sans-serif;
+}
+
+main > div {
+  position: absolute;
+  width: 100%;
+  min-height: 100%;
+  left: 0;
+  top: 0;
+  background-color: #424242;
+}
+
+.overlay-background {
+  position: fixed;
+  width: 100%;
+  min-height: 100%;
+  margin : 0px;
+  left : 0;
+  top : 0;
+}
+
+.overlay-content {
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+  padding: 0.3em;
+}
+
+.overlay-foreground {
+  background-color: white;
+}
+
+.modal-background {
+  background: rgba(77, 77, 77, 0.77);
+}
+
+.context-menu {
+  position: absolute;
+}
+
+.modal-dialog, .floating-window {
+  position: absolute;
+  max-height: 90vh;
+  max-width: 90vw;
+  overflow: auto;
+}
+
+div.monitor-header-snapshot {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1;
+}
+
+.workflow-graph {
+  width: auto;
+  height: auto;
+}
+
+.workflow-graph > svg {
+  font-family: "Consolas", "Courier New", "Courier", monospace;
+}
+
+svg text {
+  font-size: 0.4rem;
+}
+
+svg .mdl-color--primary {
+  fill: #7ac143;
+}
+
+svg .mdl-color--light-green-50 {
+  fill: #f1f8e9;
+}
+
+svg .mdl-color--grey-50 {
+  fill: #fafafa;
+}
+
+svg .mdl-color-stroke--light-green-50 {
+  stroke: #f1f8e9;
+  stroke-width: 1;
+}
+
+svg circle, svg rect, svg marker {
+  filter: url(#drop-shadow);
+}
+
+svg g:hover > circle.mdl-color--primary,
+svg g:hover > rect.mdl-color--primary {
+  fill: #bbdf9f;
+}
+
+.centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.window-drag-bar {
+  position: absolute;
+  width: 100%;
+}
+
+.no-select {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.nav-top-right {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+}
+
+.nav-top-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.nav-bottom-right {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
+}
+
+.nav-bottom-left {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.contain-vert, .flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.fill-vert, .flex-fill {
+  display: flex;
+  flex-grow: 1;
+}
+
+.fill-vert-stop {
+  width: 100%;
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.inline-control {
+  display: inline-block;
+}
+
+.themeable, material-dropdown-select {
+  background-color: white;
+}
+
+/* Material Components hack to force their overlay above ours */
+div.acx-overlay-container {
+  z-index: 100000 !important;
+}
+
+h2, h3 {
+  display: inline-block;
+}
+
+.property-label > span {
+  height: 1em;
+  margin-top: 0.5em;
+}
+
+span.icon-green > i {
+  color: #7ac143;
+}
+
+span.icon-yellow > i {
+  color: #ffc300;
+}
+
+span.icon-red > i {
+  color: #d32f2f;
+}
