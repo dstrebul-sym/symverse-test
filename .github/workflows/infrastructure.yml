@@ -1,0 +1,46 @@
+name: SYMSphere/SYMLab/Infrastructure
+on:
+  push:
+  workflow_dispatch:
+concurrency:
+  group: "${{ github.ref }}"
+  cancel-in-progress: true
+env:
+  SSH_PRIVATE: |
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
+    QyNTUxOQAAACDi2QHfKNmNMGTtYFEiCZx/pSpzEIeT8+Wri8bGUvabxgAAAJiwOV2asDld
+    mgAAAAtzc2gtZWQyNTUxOQAAACDi2QHfKNmNMGTtYFEiCZx/pSpzEIeT8+Wri8bGUvabxg
+    AAAEDCu5qHe0orr0f6FC1O3SxcaoOSDvPNfEo/rf1T+kH4NuLZAd8o2Y0wZO1gUSIJnH+l
+    KnMQh5Pz5auLxsZS9pvGAAAAFXN5bXZlcnNlQHN5bWJvdGljLmNvbQ==
+    -----END OPENSSH PRIVATE KEY-----
+  SSH_PUBLIC: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOLZAd8o2Y0wZO1gUSIJnH+lKnMQh5Pz5auLxsZS9pvG symverse@symbotic.com
+jobs:
+  update-versions:
+    runs-on:
+      - self-hosted
+      - symverse-build
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($SERVICE_NAME == "acceptance-tests") || ${{ github.event_name }} == "web" || (always() && ${{ github.event_name }} == "trigger") || (always() && ${{ github.event_name }} == "pipeline")
+    timeout-minutes: 60
+    env:
+      GIT_STRATEGY: none
+      DEPLOYMENT_REPO: git@gitlab.symbotic.com:SYMSphere/SYMLab/deployment.git
+    steps:
+    - run: python3 /scripts/update_versions.py
+  update-versions-acceptance-tests:
+    runs-on:
+      - self-hosted
+      - symverse-build
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($SERVICE_NAME != "acceptance-tests") || ${{ github.event_name }} == "web" || (always() && ${{ github.event_name }} == "trigger") || (always() && ${{ github.event_name }} == "pipeline")
+    timeout-minutes: 60
+    env:
+      GIT_STRATEGY: none
+      DEPLOYMENT_REPO: git@gitlab.symbotic.com:SYMSphere/SYMLab/acceptancetestsruns.git
+    steps:
+    - run: python3 /scripts/update_versions.py
