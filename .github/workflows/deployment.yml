@@ -1,0 +1,2027 @@
+name: SYMSphere/SYMLab/Deployment
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+  - cron: 0 7 * * 0
+  - cron: 0 14 * * 0
+  - cron: 0 12 * * 0
+  - cron: 0 10 * * 0
+env:
+  KUBECONFIG_DEVQA_NEW: |-
+    apiVersion: v1
+    clusters:
+    - cluster:
+        certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUN5RENDQWJDZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRFNU1EUXhNREl3TVRFeU1sb1hEVEk1TURRd056SXdNVEV5TWxvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTUxiClB3cnVwSFhaYnVNYWZTalVUZ01nejZPMGhZVUI2NDNKdjRDNm9QVzdLYlZPNFlaNUFiMHdYbVVERWFjZkp2amQKNjNyQXZzSHB0cXVRK1lkL281dVVJa3o3enVLcmozaGlMUkEvVzdscDQ0cVhwcnVRYU9PNDhHcXhoVjdDSHp1WQpoTGZ2anAxV3lUOFFhNUQxWlViMkt3dCs1QTRYZjFBVFc2QkgvdkowaUlueEI3U2EwdjVQWlg0VUN0MU1oYUNjCmo0T2ZBWU9IWGZseGpLV1NqY1FpRytRTkNLUkJZZXM2cUhOdnVqeW9JZ2hSOEp5NEE0NjZvVmNhZUNUQldZTGIKRzRhSTEzd0xZS1NDSnhTM1ZReENuTGZCT0FLb3o5N01HUHVqdmhJekR4OUo3SnpxQzVQanlOb2s2S1NiZnZsMQp3dGlLUGJTY0J3U2pqYUpHMHRjQ0F3RUFBYU1qTUNFd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFCWWZlek9DZ1EyWlhwOFhBaDBoRWI0L0tENEYKcEFVTkExU1hKVHdRSWk2WWVLVit6S0FkZVEvSkJKLzFQQU1wWEVmZHBrMU02aXlPWXl4bFBmK080cnRKN2IwcQpOSEMrM0w1Q0poUHZHVnkvWnV1UFdXMEpobFFSd0d3bHJZVEp2Wm05OHRvRjE0bjhGZDQyY3ZnYjBqc3Z2TnJtCmt3bitkU2Z4VCtkUGFwZ0hEdzNCbzZOQkwwcnh3dWtjc3o3ZE5HblBmc2NGOWRobnB0RVBzbEdxREpMRzdSeUIKZHhzdlplbGx2cTFSVUpEZ1MxbXE5dVFBQmdWM1VzL1ZhOE8zU3pzSldEKzJrZmkzQ0dKOUoyRUtzNXJRS1ZZbwpxVkRiYUQ3QUh1d0FlZ25tWmZXRXpBcllPaUg3OTlTTFNRRzJuNUNhaEtnOUp4N1JFMGlYZFdDbmc1WT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+        server: https://10.224.2.28:6443
+      name: kubernetes
+    contexts:
+    - context:
+        cluster: kubernetes
+        user: kubernetes-admin
+      name: kubernetes-admin@kubernetes
+    current-context: kubernetes-admin@kubernetes
+    kind: Config
+    preferences: {}
+    users:
+    - name: kubernetes-admin
+      user:
+        client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM4akNDQWRxZ0F3SUJBZ0lJRjVMMDdFeWxCVE13RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB4T1RBME1UQXlNREV4TWpKYUZ3MHlOVEF6TURZd09UTTJNekJhTURReApGekFWQmdOVkJBb1REbk41YzNSbGJUcHRZWE4wWlhKek1Sa3dGd1lEVlFRREV4QnJkV0psY201bGRHVnpMV0ZrCmJXbHVNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQTVTVFgxcERNbVQ1Ny9tdHQKSWpRUWl5R0ROd2NUZE1KWWZZTkNvNGVkSUtRNTVRL3VUTjJMelBQS2gzT3YreDczOSswZHZsUUlmT0dpdjNwcgp6Rkc1cGRrWW8xbWxON2pFaVFZMm5JdG1GZllKNHcrb00wVHpxMUUrMnlZODFDMU05WndrTzFvSnlraEVXMnI4CiswZXlyK2pMN0JETXAraFB5WWFlY0ZLTk16RE50UkZab0RJZVMzdjdNZlFWOE5idGlXQWpmQkR2ZStoQ1FZVnIKWmZkYVNmUUI0WkpiNDFHNFFqSzJyemVKSjVNUG9Odm0xZlJoc2JHTTAzdzV4WUFqeVpBaHMvaG1hQVdSZVVPRApvaTVrd29ZRHdoZXhINWw1VVhiQVB3RjJnYno5WHJ4UzlUUmFPWCtVUEZZT3JWRGtFd3JiQ2gvazVIWmhvTUxlCm5BZnl1d0lEQVFBQm95Y3dKVEFPQmdOVkhROEJBZjhFQkFNQ0JhQXdFd1lEVlIwbEJBd3dDZ1lJS3dZQkJRVUgKQXdJd0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFLREc0eUtXRG51MFlaRytjeGxscjBFT0kvYzNqaU0reDA2VwpMbW0rdjJ1TTdrWFc2enRmQjNwNk5KOUhxaXpqN1BONG1oN25oeEZ1RXgwSWo3TjlxL2hoOFdjcUZMUHNhNVZHCklNUGh6MUVlM2VZQjRlYlByK3hvMWUra3BORVg0Um5FdVVKWlFSSUJrWGx3U1RFbUZ5ekZGMjU4ejBmajdpekgKaVMrNWwxSFh5R3g5RHQ5NloxbGg5Wld3b0Zqc1ZVUDZmOGErZWJDZnhLRklYVTZZSks5RmU1VWZnNTN1VS9MeQpadVVVNW00bTQvN3VhVG9qOWErTndnZVFIMkpPWlg0MDV2N1ZELzVBU1RubUpuTmxOUVJhRlZTZVlDc3RUUTIvClhyRE1QcWRnSUNXdUJjV2FHcWVnQU05ZU9wdXJ4Z1BldlA5M0F3OW5pNXpGdjdtNlgrMD0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+        client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcFFJQkFBS0NBUUVBNVNUWDFwRE1tVDU3L210dElqUVFpeUdETndjVGRNSllmWU5DbzRlZElLUTU1US91ClROMkx6UFBLaDNPdit4NzM5KzBkdmxRSWZPR2l2M3ByekZHNXBka1lvMW1sTjdqRWlRWTJuSXRtRmZZSjR3K28KTTBUenExRSsyeVk4MUMxTTlad2tPMW9KeWtoRVcycjgrMGV5citqTDdCRE1wK2hQeVlhZWNGS05NekROdFJGWgpvREllUzN2N01mUVY4TmJ0aVdBamZCRHZlK2hDUVlWclpmZGFTZlFCNFpKYjQxRzRRaksycnplSko1TVBvTnZtCjFmUmhzYkdNMDN3NXhZQWp5WkFocy9obWFBV1JlVU9Eb2k1a3dvWUR3aGV4SDVsNVVYYkFQd0YyZ2J6OVhyeFMKOVRSYU9YK1VQRllPclZEa0V3cmJDaC9rNUhaaG9NTGVuQWZ5dXdJREFRQUJBb0lCQVFEVFQrK3ZrbWJycDBESApkaC8xVzlncHhpVHdXUmtySXBKaVpPck9UYUNzV21aOWcveDViQkdoVnUxZGptVXFpdnVYNmxYMGtDQW5zaGpZCnhiZWxlM1JkcWwvYlBDOXR2SG1aOTEzamJYWWVLSUFqb2V1MkpBOGwzTTIvWVhyVkhGV05ab25QSmhCRE4vTzUKN21jUC82V2NMVzNvNi9FZm9zLzVnNmlXNHJvT0NtUGVjN3YrZDlwaFdJTWNBVmFRVWh5M2x2b2FuU21ydFF3RQpXUjc0dWFQeFFZTllIc2lUK1huK05seHJmYzU3VG9JSDF5TVNYc3owZDc2bXd2Z1BrVkl0Vy9raElyVkMzaVErClpkc3cxR1JLK2hOVjVOaGpucmZzMHdjZk03SVlTalhDWXdTMVZpTGhTWHZ2b1RENTlYRFQvZXNSakdoTFY2T24KN0YxZmhQSkpBb0dCQU8vODB4SzFOSkhKdkJWOVNWQml1RXVvS0VSYjhmeFFNaDdaWXJZTDNobExLU3hnZXVpOQoyRjJKUDN5dktDTmxmeFVJVjJWR2JndXRWRTNsQU1laWg2NTliS3JxMWllMUNSK3gxM3c4YnBuOW1GYXRncng0CnZUSk50bXdSSTFEZGpRNkJ5amVQM1krV1V6SWU0NWQ3dHhoSFJOamxna3pjRDBzSzIvdHpkY3ZYQW9HQkFQUnUKek5YenZPKzFjOUh5bkJpdk9ta2hLdXQxS1lpektEa0RFcG84SXRsemdoK3BpTjF6RHBoVFEzdnZnWEEvNzlkNgp1TisxUGJIU3J3SmZ5ODc1bGNLeUVxTWtoc050RHo4cjRlVjl0NXFOS0huek10bEhLaG1JUzEyUGZ1REhubGtOCmJQTVMyT0IwVEZ6Ym56eFF0Z2h1QzE2ZUROa21yU1QydVY0MW5KTzlBb0dCQUlPdFRrY0tnL0NtSnZ3SGhVMkYKRFNmOStUSWczUEtiTWhUNUpBOU5EYTBGTDI4NDlOZDFLeDJQYS9WR3loZzUzWE8xNHZZZm9jdm9hOFJkcllMYwpLK1JTejJnc2VCckxXMWszcEV0M2dSd2ZLQklQSEJlN2k5dnBCZm5mb1dnQ1dCNG9tc0xIdmtMRnNacGpsbThNCm81YS9yQWZ5VGY5TUUxd1Nka2RPdjhoN0FvR0Flekw5ZXprR21hdFRYUlp6SnQzckN1SDB5QWlkanBEK1RQNEgKZWtXbEt3VFZLVEJDRTV2U1YyUmdOeTlZaGtNemw5LzdIb1l6T2xWK2NDdm9oY0cyZ2hOTzRYdWZrUkIvQnRBUApZNlFoem53blVwQUpxUW45WmpFVUMyd3Yvd3VkL0RTUUhWUDZpK2NTTmh0Yi93S1BQV0I1eW83TzJ3UnJjSjRLCmdEbDFXZUVDZ1lFQTZ0S3JXYWluZzArcDVHRlNnR3M2djdIVCsrRElVcFJOVmNMQy9aTzNWOTZQZzZHWEFoNVMKWHdqWTRQUkwrQXhPenVSVnBLa3Y3aC9jMTF2bkJRaVozQmdXVmpacGxJVU1zQ0ZjWnhNK1pKM0Z5d2NYMkNLVwpWTXkreGVuY0YrVU5zYVMrYjRpdlRlMlltZEpBRDUwNnp4bFgrMC9zYTZPR3lyUzIvcThDaGdBPQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=
+  KUBECONFIG_STAGE_NEW: |-
+    apiVersion: v1
+    clusters:
+    - cluster:
+        certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUN5RENDQWJDZ0F3SUJBZ0lCQURBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwcmRXSmwKY201bGRHVnpNQjRYRFRFNU1EUXhOVEUyTURZeU9Wb1hEVEk1TURReE1qRTJNRFl5T1Zvd0ZURVRNQkVHQTFVRQpBeE1LYTNWaVpYSnVaWFJsY3pDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTWlTCmRNSXZaY1dDaE1IUGg0MVJwK09ZK3VJc0E3aGEwM0d5TllzWUpmcExBZDZUbFg5ZmpMeVBGMTYySW1Pb3pZYysKd2pySW9UMkVXazRNblg0NHhCRS9jaDAxM3hGRDFIZG5NbUJra3p3S0xIUDFySndydnN0UVZ0TXRDVG9kdzQxTwpaZjRIcWs1cWV4TGhmdWoyaXlqWmgzSTlEdGkzNTNxbnU4ZnVxbkJVTlo2eTFYNkVOWUdUTzlHSG1zTitsa3V5CjNBaFEzMVFvaEpPbzhKeTlJS2hIZlJoWENQcWUyNFQrdlNtdEN1Zy9vNXAxVyttNHUybzNieERabEhZaFRYQkcKYXpaemRhSTI1NXU1MExyWVNjQ2lZUHQzaXZkWVJnLzVtTTNlaE9WZ1IvenV4TENOOFhkT2NCTXJXN21STmM1YwozUTFhYWJ0WGUveDVWUE1UUURVQ0F3RUFBYU1qTUNFd0RnWURWUjBQQVFIL0JBUURBZ0trTUE4R0ExVWRFd0VCCi93UUZNQU1CQWY4d0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFHb0tvMWkyZkdBZ2FCb21NM0dYeGJtU3dHRjcKS21RZ0hEZE1nbnpNVDhVNGJDUlpVR3V4cklTMWRWUXp1anlvRHh0WVhBNTB1Q3dEM0F3UXdsN1BiajZqRWdpTgpBQk9jTWIySWx3S2RjdzQ1QngxYitiUlk0a1lNTlV4ZVZVUGFSZXlnT0ZFd3NoamxpUVgrRHFvQnRoWEo3WjNrClB3YytNa1ptbDhZdGFjZzBvRHFKUGZwL1RpbTZJOEIybDJZSUI3M3NpUitLTGk0bUdGZVFpQndPMW1oSHVvWEQKbmZLU3h6ZnZPVkVkbFBBZHVUVFFpRzYxK3NveUhBK3lUUHNUTUZBSmdueWN2TGxlcE9qRm5RaElZOE9TUUZFegp1Z1cxSlNJTFE5aUVPSW1DQU9mYlFvRXVHVGNIRmd2Vkh4QUdzOHBCdHF2Mi9Bek1kUEFXOFhlYm5uQT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+        server: https://10.224.2.100:6443
+      name: kubernetes
+    contexts:
+    - context:
+        cluster: kubernetes
+        user: kubernetes-admin
+      name: kubernetes-admin@kubernetes
+    current-context: kubernetes-admin@kubernetes
+    kind: Config
+    preferences: {}
+    users:
+    - name: kubernetes-admin
+      user:
+        client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUM4akNDQWRxZ0F3SUJBZ0lJRCtFbU53dmNwYXd3RFFZSktvWklodmNOQVFFTEJRQXdGVEVUTUJFR0ExVUUKQXhNS2EzVmlaWEp1WlhSbGN6QWVGdzB4T1RBME1UVXhOakEyTWpsYUZ3MHlOREV3TURReE1ETXpNVGxhTURReApGekFWQmdOVkJBb1REbk41YzNSbGJUcHRZWE4wWlhKek1Sa3dGd1lEVlFRREV4QnJkV0psY201bGRHVnpMV0ZrCmJXbHVNSUlCSWpBTkJna3Foa2lHOXcwQkFRRUZBQU9DQVE4QU1JSUJDZ0tDQVFFQTErYW1DeHdMbVpTd244bW4KVzFpaW1zRUJ1dGlxbGtWdmR6WXlsYlpmVUd2WG1HRmtLRUsvOS85N3U3SkRLck9HdG9VUFljeDhzc0F6alJiegpndHdJTUJlYWlsZWFDWGU0NUhvSm9zaVp6VzdLU1QzZlE2MzR2cmNhcURzUlp6K0ozWHRPMG8zZDAxMUo5VFF3ClljOHQyUWhYZGNpdE1QaTVHNDQvWlgrSUNhaVh0T2k4MmJCRk8wRmFLeXlHUnZnTndtT1BZdTBlWXpIMjZ5NHcKZjd0bUdFZWZyTUZ2N3gvZlR3WEZVdGhOR0NmeXdRRnFZbDBObnN4d05WR1BhRlhSamxNTEFUWDNWZU9ybHYwWgphY29iUzg0SkZnVzY3d2p0OWZpakJtWVNzZnBZL0ZqQ1MrcDRRWHplK05JQk1YK0tJVndZWVVycEo4RE9XVERXCmlyYWhBd0lEQVFBQm95Y3dKVEFPQmdOVkhROEJBZjhFQkFNQ0JhQXdFd1lEVlIwbEJBd3dDZ1lJS3dZQkJRVUgKQXdJd0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFFTWdhMEwxMVB2bUNzcVcrNy8vcFc3d0t5UVVmYkhmSzdlVgpMSjZsVldidlVpTC9uWENDOXBiMTdmWTBpblBKRUJ4bU85MDRxMmxUeGFGVDNZSTljWTlnZ1BqU0Z3em5NczZFCjdNWVJsSlRNaFBTR1pINkI0MWF1M2ZGNnlPRGUyejRCNkwrNzFoM0RubE5ZeWpmcS9OUzNZSldvOFl6ci8zdzIKSmhLV2RJcGhBSkl0blZLN3R2SDNNeDB1MDBiaEUyRDJBQUdUc3JiMy9EM1BsaFFuNTlIRTVpSnpyQTYxQ2JoMgpkQTRhbjBoeUhyNDRScDZvZVYxMEhaU3lKTi9HYUpGN0oyNktJZXh1M1VUclRYTUFIK2E4MGlhL09KKzBuaEhzCmlBckF0czFGY0YvLzFqcHhHMzlkajRiMENGazMyekxjWFBmakppRGYrdGtheEd0NkxiOD0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+        client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcEFJQkFBS0NBUUVBMSthbUN4d0xtWlN3bjhtblcxaWltc0VCdXRpcWxrVnZkell5bGJaZlVHdlhtR0ZrCktFSy85Lzk3dTdKREtyT0d0b1VQWWN4OHNzQXpqUmJ6Z3R3SU1CZWFpbGVhQ1hlNDVIb0pvc2laelc3S1NUM2YKUTYzNHZyY2FxRHNSWnorSjNYdE8wbzNkMDExSjlUUXdZYzh0MlFoWGRjaXRNUGk1RzQ0L1pYK0lDYWlYdE9pOAoyYkJGTzBGYUt5eUdSdmdOd21PUFl1MGVZekgyNnk0d2Y3dG1HRWVmck1Gdjd4L2ZUd1hGVXRoTkdDZnl3UUZxCllsME5uc3h3TlZHUGFGWFJqbE1MQVRYM1ZlT3JsdjBaYWNvYlM4NEpGZ1c2N3dqdDlmaWpCbVlTc2ZwWS9GakMKUytwNFFYemUrTklCTVgrS0lWd1lZVXJwSjhET1dURFdpcmFoQXdJREFRQUJBb0lCQUZPUWJIZ2tWTUVPOGdZRwpzUVlFR251M2RJbnpUcU4zSUp1Tm1LcWx1ZUtRdXhPNXJtQis1WHFCb2t5VnhMV0VZd0hHSXB3QjM4bjM1bndYCmhBMEVTUThFTThhVC9ZVG9sK0dtOG8vVkFPS29uUmNZSVpBNmgrcVpTSElRMnIyUnREVExnMGl2ckVvZzgzMDYKdy9jM2oxRlBqenFCZjdkU3JhTGl2ZHIxTDV3OHRPeisyR3BZTjNjUlg2bUFNWHV1c2thYjFTYklUd3NhM2tHcQpIbHE3QzBFTHMxR3F3eGx1QWVXS2VqYWZTTDJjOGtJbVJVSXhJK2U2Q3I2cWxmTithdVljTmkvQUtOWWNFeVFzClRWOWxFZHJiOTk1S3hCRXduK2wwdUdKN2FwQ1Z0c3ptSWJ1cGdFV2FtQ2VKNEhHMnFIRFVkcU1XS1NxZ0M1ajAKbk9IRjFuRUNnWUVBN0ZxTXBsRzBkNUhZbG1PQm9yNVBZMHNsbGt2cGZCaWJLQmdiV0tWdi9oZ1NsOGhGSE0rTQpncUY1bzlNSmhvMG5rMHViRlZ4UFdGUGZ3Q0s2WVRyaVZZNjZaQlBKUEx5aXoxeEs3VEEzYVVBTzBRUDFGaTFSCmxrTTBvdmkzMnVCbWZ1QlkreDkrQnBzV0w4UW9ZaGxkZ3NFMFRmSUJYaW8yNXEyRUIvekpyYzhDZ1lFQTZkamcKNDBWT3pjOXRxWWdCMEVKR0VLV1FmVnBMYVdyWVJjNkhQenFwVXl0a2NNY09TcEFzZlFuSmFkbCtGWmk2NWkzWApJUXM4cUFYUU9RN0RJdEFZRmNJME95N1cxVGdpOUZPNitrL0tyTGZIL2UvRDROaXQzV3QzdEZSSnRYZVhuTTJJClZ3ZlJFSGgrS1ZJU01wRDhrSmhSM0ZLZUF6T0tTVVhTYVlidk9vMENnWUVBbHdUSWgrRCs4Y09UNDR2VElqeDkKbDFGRnhBSGZQemF0dFBHcVQzcnQweXBvZnVrdEY5cVp5a0lJNmgrSEg1MERvMzhVcVpKZzlHd3JOS1k3OXJKYwpPaFRIamZpQ2hiZDJSQTZScFhwQWZaUzdvdHZuZHZNZ0JXWU50UEE4OGJLZWF3VklkYlRLbnNmclpqdnRIYmxkCllaVzNxUEl2NDQ0UHBGZE1YSm90OTBzQ2dZRUF3cmNOK3UvNUFESmFFN0htSUswdWZpbitPQUo1akp1azNldHMKZmwrd0lrcWRaYks1MmFoWEF2NmxNWGdpSG9XQUNxM2MxZXp2WXRFRVlwNUNLYml3ZFYyeDlCMjZVT3hmWHFaaApxSS9NS1NrV1pBSERUblBkd2VMOFY3RmZkclRRRDRhc29oc21IOXJVNGo4dVcrQ1NEU3huN1ZiMXI2QzQ0dTQ2Cm1CZjlGdmtDZ1lBc3lzT1ltdDZOdkVBRFU5K3ljVlJjWlhFZitxTEtMcHpvZmtMRTlwcFJJdDhNdTUwbzVxbXEKblFzY1VnR29YbjQySk5PVWpKR1Y5V1RBOFluUEYySThLWTVxNDNNZWFHeitlRDEySFBvWUxBOXpEcFJnWXA0aApIYmtKekVWcHd2YnZGby9FZDdWRTJlZUpwWUxKUlh4dmNNZE9tUjdOeGsvVktJY2VMTTJIQUE9PQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=
+jobs:
+  ElastAlert-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA != "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: elastic
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      DEPLOY_INFRA: 'true'
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: elastalert
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: helm repo add codesim https://helm.codesim.com
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args -f ${DEPLOYEMNT_FOLDER}/values.yaml
+  Elastic-curator-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA != "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: elastic
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      DEPLOY_INFRA: 'true'
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: elasticsearch-curator
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Elasticsearch-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA != "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: elastic
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      DEPLOY_INFRA: 'true'
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: elastic
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args -f ${DEPLOYEMNT_FOLDER}/values.yaml
+    - run: sleep 5
+    - run: kubectl apply -f elastic/svc.yaml -n elastic
+  Fluent-bit-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA != "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: logging
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      DEPLOY_INFRA: 'true'
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: fluent-bit
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: kubectl apply -f fluent-bit/fluent-bit-custom-config.yaml -n logging --force
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args -f ${DEPLOYEMNT_FOLDER}/values.yaml --set podAnnotations.checksum/config=`sha256sum fluent-bit/fluent-bit-custom-config.yaml | awk '{ print $1 }'`
+  Ingress-resources-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA != "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      DEPLOY_INFRA: 'true'
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: ingress
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: kubectl apply -f ingress/ -n devstage
+  Nginx-Ingress-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA != "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: ingress-devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      DEPLOY_INFRA: 'true'
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: nginx-ingress
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: helm repo add kube https://kubernetes.github.io/ingress-nginx/
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args -f ${DEPLOYEMNT_FOLDER}/values.yaml
+  Run-Kafka-Configurator-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA != "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: kafka-dev
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      DEPLOY_INFRA: 'true'
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: kafka-config
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: helm del kafka-config --namespace kafka-dev || true
+    - run: helm -n kafka-dev upgrade -i -f kafka-config/values.yaml --debug kafka-config symbotic/kafka-config
+    - run: kubectl -n kafka-dev wait --for=condition=ready pod -l release=kafka-config --timeout=60s
+    - run: kubectl -n kafka-dev logs -l release=kafka-config -f
+    - run: kubectl -n kafka-dev wait --for=condition=complete job -l release=kafka-config --timeout=10s
+    - run: helm del kafka-config --namespace kafka-dev
+  Kafka-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA != "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: kafka-dev
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      DEPLOY_INFRA: 'true'
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: kafka
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Kibana-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA != "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: kibana
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      DEPLOY_INFRA: 'true'
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: kibana
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Logstash-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA != "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: logging
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      DEPLOY_INFRA: 'true'
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: logstash-devstage
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Run-Mongo-Backup-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA != "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || (always() && ${{ github.event_name }} == "schedule") || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      DEPLOY_INFRA: 'true'
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: mongo-backup
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: helm del mongo-backup --namespace $DEPLOYEMNT_NAMESPACE || true
+    - run: helm repo update
+    - run: helm -n $DEPLOYEMNT_NAMESPACE upgrade -i -f mongo-backup/values.yaml --debug mongo-backup symbotic/mongo-backup
+    - run: kubectl -n $DEPLOYEMNT_NAMESPACE wait --for=condition=ready pod -l app=mongo-backup --timeout=600s
+    - run: kubectl -n $DEPLOYEMNT_NAMESPACE logs -l app=mongo-backup -f
+    - run: kubectl -n $DEPLOYEMNT_NAMESPACE wait --for=condition=complete job -l app=mongo-backup --timeout=600s
+    - run: helm del mongo-backup --namespace $DEPLOYEMNT_NAMESPACE
+  Mongo-express-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA != "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      DEPLOY_INFRA: 'true'
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: mongo-express
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  MongoDB-Replicaset-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA != "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      DEPLOY_INFRA: 'true'
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: mongodb-replicaset
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  RabbitMQ-HA-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA != "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      DEPLOY_INFRA: 'true'
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: rabbitmq-ha
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args -f ${DEPLOYEMNT_FOLDER}/values.yaml
+    - run: kubectl apply -f ${DEPLOYEMNT_FOLDER}/svc.yaml -n ${DEPLOYEMNT_NAMESPACE}
+  Redis-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA != "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      DEPLOY_INFRA: 'true'
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: redis
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Selenium-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA != "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: selenium
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      DEPLOY_INFRA: 'true'
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: selenium
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Selenium-SSH-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA != "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: selenium
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      DEPLOY_INFRA: 'true'
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: selenium-ssh
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  AnsibleService-deploy-keene-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-ansible
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: kubectl create ns devstage-jobs || true
+    - run: kubectl apply -f _shared/sym-ansible/vmware-creds.keene.yaml -n devstage-jobs
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args -f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml --set serviceOptions.cloud=keene
+  AnsibleService-deploy-azure-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-ansible
+      JOBS_NAMESPACE: azure-jobs
+      NAME: sym-ansible-azure
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: kubectl create ns ${DEPLOYEMNT_NAMESPACE}-${JOBS_NAMESPACE} || true
+    - run: kubectl apply -f _shared/sym-ansible/azure-creds.yaml -n ${DEPLOYEMNT_NAMESPACE}-${JOBS_NAMESPACE}
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${NAME} --namespace ${DEPLOYEMNT_NAMESPACE} --args -f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.azure.yaml --set serviceOptions.cloud=azure --set nameOverride=${NAME} --set fullnameOverride=${NAME}
+  AnsibleService-deploy-colo-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-ansible
+      JOBS_NAMESPACE: colo-jobs
+      NAME: sym-ansible-colo
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: kubectl create ns ${DEPLOYEMNT_NAMESPACE}-${JOBS_NAMESPACE} || true
+    - run: kubectl apply -f _shared/sym-ansible/vmware-creds.colo.yaml -n ${DEPLOYEMNT_NAMESPACE}-${JOBS_NAMESPACE}
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${NAME} --namespace ${DEPLOYEMNT_NAMESPACE} --args -f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.colo.yaml --set serviceOptions.cloud=colo --set nameOverride=${NAME} --set fullnameOverride=${NAME}
+  AnsibleService-deploy-colo-dev01-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-ansible
+      JOBS_NAMESPACE: colo-jobs
+      NAME: sym-ansible-colo-dev01
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: kubectl create ns ${DEPLOYEMNT_NAMESPACE}-${JOBS_NAMESPACE} || true
+    - run: kubectl apply -f _shared/sym-ansible/vmware-creds.colo.yaml -n ${DEPLOYEMNT_NAMESPACE}-${JOBS_NAMESPACE}
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${NAME} --namespace ${DEPLOYEMNT_NAMESPACE} --args -f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.colo-dev01.yaml --set serviceOptions.cloud=colo-dev01 --set nameOverride=${NAME} --set fullnameOverride=${NAME}
+  AnsibleService-deploy-gcp-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-ansible
+      JOBS_NAMESPACE: gcp-jobs
+      NAME: sym-ansible-gcp
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: kubectl create ns ${DEPLOYEMNT_NAMESPACE}-${JOBS_NAMESPACE} || true
+    - run: kubectl apply -f _shared/sym-ansible/gcp.yaml -n ${DEPLOYEMNT_NAMESPACE}-${JOBS_NAMESPACE}
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${NAME} --namespace ${DEPLOYEMNT_NAMESPACE} --args -f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.gcp.yaml --set serviceOptions.cloud=gcp --set nameOverride=${NAME} --set fullnameOverride=${NAME}
+  Cloud-Service-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-cloudservice
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  EnvMan-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-envman
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  EnvMan-Test-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-envman-test
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Identity-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-identity
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args -f ${DEPLOYEMNT_FOLDER}/values.usermap.yaml -f ${DEPLOYEMNT_FOLDER}/values.envScopes.yaml -f ${DEPLOYEMNT_FOLDER}/values.clients.yaml -f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml
+  Job-Tracker-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f ${DEPLOYEMNT_FOLDER}/values.yaml -f common/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: job-tracker
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  SymMetric-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: symmetric-api
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  SymNotifier-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-notifier
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  SymDash-SymVerse-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-dash
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  DbManagerService-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-dbmanager
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  ScriptManagerService-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-scriptmanager
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  SymDoc-API-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-doc-api
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  ConfluenceCrawler-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-confluence-crawler
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Crawler-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-doc-crawler
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  GitlabCrawler-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-gitlab-crawler
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  TaggingService-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-tagging-service
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Lift-Configs-Generator-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: lift-configs-generator
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Site-Configuration-Generator-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-cad-scg
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Geometry-File-Generator-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-cad-geometry-file
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Primar-Data-Generator-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: pdg-symcad
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Translation-Layer-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-cad-translation
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Traffic-Networkr-Generator-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-traffic-network-generator
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  System-Map-Generator-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: system-map-generator
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Bot-Binary-Map-Generator-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-cad-bbmg
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Site-Data-Generator-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-cad-sdg
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Personality-File-Export-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-cad-pfe
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  SYMCAD-API-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-cad-api
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Emulator-Config-Generator-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: emulator-config-generator
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Hardware-Emulator-Generator-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: hardware-emulators-generator
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Code-Plates-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-codeplates
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  LogAggregation-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: sym-logaggregation
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  vSphereProxy-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: vsphereproxy
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Task-Analysis-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: symbotic-taskassignment-analysisservice
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
+  Task-Analysis-Proxy-deploy-devstage:
+    runs-on:
+      - self-hosted
+      - symverse-deploy
+    container:
+      image: proget.repo.symbotic.corp/dev_images/library/symverse-deploy:v2.1.2
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         !($DEPLOY_INFRA == "true") || !(${{ github.ref }} != "devstage") || ${{ github.event_name }} == "web" || ${{ github.event_name }} == "push"
+    timeout-minutes: 60
+    env:
+      KUBECONFIG: "/root/.kube/config"
+      DEPLOYEMNT_RELEASE: "${DEPLOYEMNT_FOLDER}"
+      DEPLOYEMNT_NAMESPACE: devstage
+      DEPLOYEMNT_ARGS: "-f common/values.yaml -f ${DEPLOYEMNT_FOLDER}/values.yaml"
+      KUBE_FILE: "$KUBECONFIG_STAGE_NEW"
+      DEPLOYEMNT_FOLDER: symbotic-taskassignment-analysisproxy
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 50
+        lfs: true
+    - run: mkdir -p /root/.kube
+    - run: echo -n "${KUBE_FILE}" > $KUBECONFIG
+    - run: kubectl version
+    - run: helm version
+    - run: helm2 version || true
+    - run: helm repo add incubator https://charts.helm.sh/incubator --debug
+    - run: helm repo add stable https://charts.helm.sh/stable
+    - run: helm repo add symbotic https://proget.repo.symbotic.corp/helm/SymboticHelm/
+    - run: helm repo add third https://proget.repo.symbotic.corp/helm/Third-Party-Helm/
+    - run: helm repo add fluent https://fluent.github.io/helm-charts
+    - run: helm repo add elastic https://helm.elastic.co
+    - run: helm repo update
+    - run: git diff HEAD~1
+    - run: python3 /scripts/deploy.py --folder ${DEPLOYEMNT_FOLDER} --name ${DEPLOYEMNT_RELEASE} --namespace ${DEPLOYEMNT_NAMESPACE} --args ${DEPLOYEMNT_ARGS}
